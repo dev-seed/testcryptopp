@@ -20,6 +20,48 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout<< destHexCode<<std::endl<<std::endl;
 
 
+	std::string MACedString;
+	std::string password = "password";
+
+	CryptoPP::StringSource ss
+	( 
+		destString, 
+		true,
+		new CryptoPP::DefaultEncryptorWithMAC
+		(
+			//"password",
+			(byte*)password.data(),
+			password.size(),
+			new CryptoPP::HexEncoder
+			( 
+				new CryptoPP::StringSink( MACedString ) ,
+				true,
+				4,
+				":"
+			)
+		)
+	);
+
+	std::cout << MACedString<< std::endl;
+
+	std::string deMACedString;
+	CryptoPP::StringSource
+	(
+		MACedString,
+		true,
+		new CryptoPP::HexDecoder
+		(
+			new CryptoPP::DefaultDecryptorWithMAC
+			(
+				(byte*)password.data(),
+				password.size(),
+				new CryptoPP::FileSink( "output.txt" )
+			)
+		)
+	);
+
+	//std::cout << deMACedString << std::endl;
+
 	system("pause");
 
 	return 0;

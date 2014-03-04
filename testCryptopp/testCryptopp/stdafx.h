@@ -13,6 +13,14 @@
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
-#include "files.h"
+#include "cryptlib.h"
+#include "osrng.h"
 #include "hex.h"
+#include "Base64.h"
+#include "aes.h"
+#include "modes.h"
+#include "filters.h"
+#include "files.h"
 #include "default.h"
+
+#include "Crypto.h"

@@ -62,6 +62,24 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//std::cout << deMACedString << std::endl;
 
+	byte Key[CryptoPP::AES::DEFAULT_KEYLENGTH] = {0,};
+	
+	std::string PlainText = "s";
+	std::string CipherText;
+	std::string DecipheredText;
+
+	std::cout<<"PlainText:"<<PlainText<<"\tsize:"<<PlainText.length()<<std::endl;
+
+	CipherText = ECBEncrypt<CryptoPP::AES>(Key, PlainText);
+
+	std::cout<<"CipherText:"<<CipherText<<"\tsize:"<<CipherText.length()<<std::endl;
+
+	DecipheredText = ECBDecrypt<CryptoPP::AES>(Key, CipherText);
+
+	std::cout<<"DecryptedText:"<<DecipheredText<<"\tsize:"<<DecipheredText.length()<<std::endl;
+
+
+
 	system("pause");
 
 	return 0;

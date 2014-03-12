@@ -2,49 +2,56 @@
 
 using namespace CryptoPP;
 
-template<class Mode>
-std::string Encrypt(Mode &Encryptor, const std::string &PlainText)
+template<class CryptoModeDecryptor>
+void Encrypt(CryptoModeDecryptor &Encryptor, byte* PlainData, size_t SizeOfPlainData, __out byte* CipherData, size_t SizeOfCipherData)
 {
-	std::string CipherText;
-
-	StringSource( PlainText, true,
+	ArraySource( PlainData, SizeOfPlainData, true,
 		new StreamTransformationFilter( Encryptor, 
-		new Base64Encoder( new StringSink( CipherText ), false ), BlockPaddingSchemeDef::ZEROS_PADDING
+		new Base64Encoder( new ArraySink( CipherData, SizeOfCipherData ), false ), BlockPaddingSchemeDef::NO_PADDING
 		)
-		);
-
-	return CipherText;
+	);
 };
 
-template <class Mode>
-std::string Decrypt(Mode &Decryptor, const std::string &CipherText)
+template <class CryptoModeDecryptor>
+void Decrypt(CryptoModeDecryptor &Decryptor, byte *CipherData, size_t SizeOfCipherData, __out byte *PlainData, size_t SizeOfPlainData)
 {
-	std::string PlainText;
-
-	StringSource( CipherText, true,
+	ArraySource( CipherData, SizeOfCipherData, true,
 		new Base64Decoder(
-		new StreamTransformationFilter( Decryptor, new StringSink( PlainText ), BlockPaddingSchemeDef::ZEROS_PADDING )
+		new StreamTransformationFilter( Decryptor, new ArraySink( PlainData, SizeOfPlainData ), BlockPaddingSchemeDef::NO_PADDING )
 		)
-		);
-
-	return PlainText;
+	);
 }
 
-
-template<class Mode>
-std::string ECBEncrypt(byte *Key, const std::string &PlainText)
+template<class CryptoMode>
+void CBCEncrypt(byte *Key, byte* IV, byte *PlainData, size_t SizeOfPlainData, __out byte *CipherData, size_t SizeOfCipherData)
 {
-	ECB_Mode<Mode>::Encryption Encryptor(Key, Mode::DEFAULT_KEYLENGTH);
+	CBC_Mode<CryptoMode>::Encryption Encryptor(Key, CryptoMode::DEFAULT_KEYLENGTH, IV);
+
+	Encrypt( Encryptor, PlainData, SizeOfPlainData, CipherData, SizeOfCipherData );
+}
+
+template<class CryptoMode>
+void CBCDecrypt( byte *Key, byte* IV, byte *CipherData, size_t SizeOfCipherData, __out byte *PlainData, size_t SizeOfPlainData )
+{
+	CBC_Mode<CryptoMode>::Decryption Decryptor(Key, CryptoMode::DEFAULT_KEYLENGTH, IV);
+
+	Decrypt( Decryptor, CipherData, SizeOfCipherData, PlainData, SizeOfPlainData );
+}
+
+template<class CryptoMode>
+void ECBEncrypt(byte *Key, byte *PlainData, size_t SizeOfPlainData, __out byte *CipherData, size_t SizeOfCipherData)
+{
+	ECB_Mode<CryptoMode>::Encryption Encryptor(Key, CryptoMode::DEFAULT_KEYLENGTH);
 	
-	return Encrypt( Encryptor, PlainText );
+	Encrypt( Encryptor, PlainData, SizeOfPlainData, CipherData, SizeOfCipherData  );
 };
 
-template<class Mode>
-std::string ECBDecrypt(byte *Key, const std::string &CipherText)
+template<class CryptoMode>
+void ECBDecrypt(byte *Key, byte *CipherData, size_t SizeOfCipherData, __out byte *PlainData, size_t SizeOfPlainData)
 {
-	ECB_Mode<Mode>::Decryption Decryptor(Key, Mode::DEFAULT_KEYLENGTH);
+	ECB_Mode<CryptoMode>::Decryption Decryptor(Key, CryptoMode::DEFAULT_KEYLENGTH);
 
-	return Decrypt(Decryptor, CipherText);
+	return Decrypt(Decryptor, CipherData, SizeOfCipherData, PlainData, SizeOfPlainData);
 };
 
 

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<countrycode>
+	<version>2</version>
+	
+	<item key="korea" type="int" value="410"/>
+	<item key="japan" type="int" value="392"/>
+
+</countrycode>
